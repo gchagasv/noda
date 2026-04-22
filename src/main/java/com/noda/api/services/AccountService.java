@@ -41,25 +41,11 @@ public class AccountService {
 
   @Transactional
   public void transfer(Long sourceId, Long targetId, BigDecimal amount) {
-       if(amount.compareTo(BigDecimal.ZERO) <= 0) {
-           throw new IllegalArgumentException("Transfer amount must be positive");
-       }
-
         if(sourceId.equals(targetId)) {
             throw new SameAccountTransferException("Source and target IDs are the same: " + sourceId);
         }
-
-      Account source = accountRepository.findById(sourceId)
-              .orElseThrow(() -> new AccountNotFoundException("Source account not found"));
-      Account target = accountRepository.findById(targetId)
-              .orElseThrow(() -> new AccountNotFoundException("Target account not found"));
-
-      if (source.getBalance().compareTo(amount) < 0) {
-          throw new InsufficientFundsException("Insufficient funds in account: " +source.getAccountNumber());
-      }
-
-      source.setBalance(source.getBalance().subtract(amount));
-      target.setBalance(target.getBalance().add(amount));
+        this.withdrawal(sourceId,amount);
+        this.deposit(targetId,amount);
   }
 
   @Transactional
@@ -72,5 +58,20 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
 
         account.setBalance(account.getBalance().add(amount));
+  }
+
+  @Transactional
+    public void withdrawal(Long id, BigDecimal amount) {
+        if(amount.compareTo(BigDecimal.ZERO) <=0 ) {
+            throw new IllegalArgumentException("Withdrawal must be positive");
+        }
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+
+        if(amount.compareTo(account.getBalance()) >0) {
+            throw new InsufficientFundsException("You don't have enough balance");
+        }
+
+        account.setBalance(account.getBalance().subtract(amount));
   }
 }
