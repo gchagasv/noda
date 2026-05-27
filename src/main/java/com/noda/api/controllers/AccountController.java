@@ -1,30 +1,51 @@
 package com.noda.api.controllers;
 
+import com.noda.api.dtos.AccountResponseDTO;
+import com.noda.api.dtos.TransactionRequestDTO;
+import com.noda.api.dtos.TransferRequestDTO;
+import com.noda.api.models.Account;
 import com.noda.api.services.AccountService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/accounts")
 public class AccountController {
 
     private final AccountService accountService;
 
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
+ @PostMapping("/transfer")
+    public ResponseEntity<String> transfer(@RequestBody TransferRequestDTO dto) {
+     accountService.transfer(dto.getSourceId(), dto.getTargetId(), dto.getAmount());
+        return ResponseEntity.ok("Transfer successful!");
     }
 
- @PostMapping("/transfer")
-    public ResponseEntity<String> transfer(@RequestBody Map<String, Object> request) {
-        Long sourceId = Long.valueOf(request.get("sourceId").toString());
-        Long targetId = Long.valueOf(request.get("targetId").toString());
-        BigDecimal amount = new BigDecimal(request.get("amount").toString());
+    @PostMapping("/withdrawal")
+    public ResponseEntity<AccountResponseDTO> withdrawal (@RequestBody TransactionRequestDTO dto) {
+     Account account = accountService.withdrawal(dto.getId(), dto.getAmount());
+        AccountResponseDTO response = new AccountResponseDTO(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getAccountType(),
+                account.getBalance(),
+                account.getUser().getName()
+        );
 
-        accountService.transfer(sourceId, targetId, amount);
+        return ResponseEntity.ok(response);
+    }
 
-        return ResponseEntity.ok("Transfer successful!");
+    @PostMapping("/deposit")
+    public ResponseEntity<AccountResponseDTO> deposit(@RequestBody TransactionRequestDTO dto) {
+        Account account = accountService.deposit(dto.getId(), dto.getAmount());
+        AccountResponseDTO response = new AccountResponseDTO(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getAccountType(),
+                account.getBalance(),
+                account.getUser().getName()
+        );
+        return ResponseEntity.ok(response);
     }
 }
