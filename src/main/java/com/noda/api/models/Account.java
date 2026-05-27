@@ -1,5 +1,6 @@
 package com.noda.api.models;
 
+import com.noda.api.exceptions.InsufficientFundsException;
 import com.noda.api.models.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,4 +32,21 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public void deposit(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be positive");
+        }
+        this.balance = this.balance.add(amount);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Withdrawal must be positive");
+        }
+        if (amount.compareTo(this.balance) > 0) {
+            throw new InsufficientFundsException("You don't have enough balance");
+        }
+        this.balance = this.balance.subtract(amount);
+    }
 }
