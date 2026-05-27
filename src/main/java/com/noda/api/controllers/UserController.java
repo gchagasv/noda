@@ -1,12 +1,13 @@
 package com.noda.api.controllers;
 
+import com.noda.api.exceptions.CpfAlreadyRegisteredException;
+import com.noda.api.exceptions.EmailAlreadyRegisteredException;
 import com.noda.api.models.User;
 import com.noda.api.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -20,6 +21,10 @@ public class UserController {
         return ResponseEntity.ok(userService.save(user));
     }
 
+    @ExceptionHandler({EmailAlreadyRegisteredException.class, CpfAlreadyRegisteredException.class})
+    public ResponseEntity<String> handleBusinessException(RuntimeException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    }
 }
 
 

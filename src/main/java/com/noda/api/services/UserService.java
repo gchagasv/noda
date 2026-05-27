@@ -1,7 +1,7 @@
         package com.noda.api.services;
 
-        import com.noda.api.exceptions.CpfAlreadyRegistered;
-        import com.noda.api.exceptions.EmailAlreadyRegistered;
+        import com.noda.api.exceptions.CpfAlreadyRegisteredException;
+        import com.noda.api.exceptions.EmailAlreadyRegisteredException;
         import com.noda.api.models.User;
         import com.noda.api.repositories.UserRepository;
         import lombok.RequiredArgsConstructor;
@@ -21,12 +21,12 @@
 
                 Optional<User> userWithTheSameCpf = userRepository.findByCpf(user.getCpf());
                     if (userWithTheSameCpf.isPresent()) {
-                        throw new CpfAlreadyRegistered("This CPF is already registered.");
+                        throw new CpfAlreadyRegisteredException("This CPF is already registered.");
                     }
 
                     Optional<User> userWithTheSameEmail= userRepository.findByEmail(user.getEmail());
                     if(userWithTheSameEmail.isPresent()) {
-                        throw new EmailAlreadyRegistered("This Email is already registered.");
+                        throw new EmailAlreadyRegisteredException("This Email is already registered.");
                     }
 
                 return userRepository.save(user);
