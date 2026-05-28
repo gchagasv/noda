@@ -22,8 +22,8 @@ public class AccountService {
     private final UserRepository userRepository;
 
     public Account createAccount(AccountRequestDTO dto) {
-        User owner = userRepository.findById(dto.getUserID())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserID()));
+        User owner = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
 
         Account newAccount = new Account();
         String generatedAccountNumber = java.util.UUID.randomUUID().toString().substring(0, 8);

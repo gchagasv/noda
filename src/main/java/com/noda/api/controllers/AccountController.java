@@ -16,6 +16,21 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    @PostMapping
+    public ResponseEntity<AccountResponseDTO> createAccount(@RequestBody com.noda.api.dtos.AccountRequestDTO dto) {
+        Account account = accountService.createAccount(dto);
+
+        AccountResponseDTO response = new AccountResponseDTO(
+                account.getId(),
+                account.getAccountNumber(),
+                account.getAccountType(),
+                account.getBalance(),
+                account.getUser().getName()
+        );
+
+        return ResponseEntity.status(201).body(response);
+    }
+
  @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@RequestBody TransferRequestDTO dto) {
      accountService.transfer(dto.getSourceId(), dto.getTargetId(), dto.getAmount());

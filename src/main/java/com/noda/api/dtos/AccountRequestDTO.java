@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter
 public class AccountRequestDTO {
     private AccountType accountType;
-    private Long userID;
+    private Long userId;
 }
