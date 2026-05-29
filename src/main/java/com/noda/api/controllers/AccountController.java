@@ -80,8 +80,10 @@ public class AccountController {
                         tx.getAmount(),
                         tx.getTransactionType().name(),
                         tx.getTimestamp(),
-                        tx.getAccount().getAccountNumber(),
-                        tx.getAccount().getUser().getName()
+                        tx.getSourceAccount() != null ? tx.getSourceAccount().getAccountNumber() : null,
+                        tx.getSourceAccount() != null ? tx.getSourceAccount().getUser().getName() : null,
+                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getAccountNumber() : null,
+                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getUser().getName() : null
                 ))
                 .toList();
         return ResponseEntity.ok(response);

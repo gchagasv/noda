@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Setter
 public class TransactionRequestDTO {
    @NotNull
-    private Long AccountId;
+    private Long accountId;
 
     @NotNull(message = "Amount cannot be missing")
     @Positive(message = "Amount must be greater than zero")

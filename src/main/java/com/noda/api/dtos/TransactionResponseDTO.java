@@ -9,6 +9,8 @@ public record TransactionResponseDTO(
         BigDecimal amount,
         String transactionType,
         LocalDateTime timestamp,
-        String accountNumber,
-        String accountOwnerName
+        String sourceAccountNumber,
+        String sourceAccountName,
+        String destinationAccountNumber,
+        String destinationAccountOwnerName
 ) {}

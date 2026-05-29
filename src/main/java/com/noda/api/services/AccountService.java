@@ -62,34 +62,31 @@ public class AccountService {
         accountRepository.save(sourceAccount);
         accountRepository.save(targetAccount);
 
-        Transaction sourceReceipt = new Transaction();
-        sourceReceipt.setAmount(amount);
-        sourceReceipt.setAccount(sourceAccount);
-        sourceReceipt.setTransactionType(TransactionType.TRANSFER);
-        transactionRepository.save(sourceReceipt);
-
-        Transaction targetReceipt = new Transaction();
-        targetReceipt.setAmount(amount);
-        targetReceipt.setAccount(targetAccount);
-        targetReceipt.setTransactionType(TransactionType.TRANSFER);
-        transactionRepository.save(targetReceipt);
+     Transaction transferReceipt = new Transaction();
+     transferReceipt.setSourceAccount(sourceAccount);
+     transferReceipt.setDestinationAccount(targetAccount);
+     transferReceipt.setAmount(amount);
+     transferReceipt.setTransactionType(TransactionType.TRANSFER);
+     transactionRepository.save(transferReceipt);
     }
 
     @Transactional
-    public Account deposit(Long id, BigDecimal amount) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found with ID: " + id));
+    public Account deposit(Long accountId, BigDecimal amount) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found with ID: " + accountId));
 
         account.deposit(amount);
-        Account savedAccount = accountRepository.save(account);
+        accountRepository.save(account);
 
         Transaction receipt = new Transaction();
         receipt.setAmount(amount);
-        receipt.setAccount(savedAccount);
         receipt.setTransactionType(TransactionType.DEPOSIT);
+        receipt.setSourceAccount(null);
+        receipt.setDestinationAccount(account);
+
         transactionRepository.save(receipt);
 
-        return savedAccount;
+        return account;
     }
 
     @Transactional
@@ -98,15 +95,16 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found with ID: " + id));
 
         account.withdraw(amount);
-        Account savedAccount = accountRepository.save(account);
+        accountRepository.save(account);
 
         Transaction receipt = new Transaction();
         receipt.setAmount(amount);
-        receipt.setAccount(savedAccount);
         receipt.setTransactionType(TransactionType.WITHDRAWAL);
+        receipt.setSourceAccount(account);
+        receipt.setDestinationAccount(null);
         transactionRepository.save(receipt);
 
-        return savedAccount;
+        return account;
     }
 
 
@@ -114,6 +112,7 @@ public class AccountService {
         if(!accountRepository.existsById(accountId)) {
             throw new AccountNotFoundException("Account not found with ID: " + accountId);
         }
-        return transactionRepository.findByAccount_IdOrderByTimestampDesc(accountId);
+        // new thing learned
+        return transactionRepository.findBySourceAccountIdOrDestinationAccountId(accountId, accountId);
     }
 }
