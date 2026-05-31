@@ -20,11 +20,6 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.save(user));
     }
-
-    @ExceptionHandler({EmailAlreadyRegisteredException.class, CpfAlreadyRegisteredException.class})
-    public ResponseEntity<String> handleBusinessException(RuntimeException exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
-    }
 }
 
 
