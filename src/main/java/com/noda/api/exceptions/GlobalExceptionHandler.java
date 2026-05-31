@@ -40,6 +40,11 @@ public class GlobalExceptionHandler {
         return buildResponse(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(CepNotFoundException.class)
+    public ResponseEntity<Object> handleCepNotFound(CepNotFoundException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDatabaseConstraints (DataIntegrityViolationException ex) {
         Map<String, Object> body = new HashMap<>();

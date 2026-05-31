@@ -59,12 +59,12 @@ public class AccountService {
         accountRepository.save(sourceAccount);
         accountRepository.save(targetAccount);
 
-     Transaction transferReceipt = new Transaction();
-     transferReceipt.setSourceAccount(sourceAccount);
-     transferReceipt.setDestinationAccount(targetAccount);
-     transferReceipt.setAmount(amount);
-     transferReceipt.setTransactionType(TransactionType.TRANSFER);
-     transactionRepository.save(transferReceipt);
+        Transaction transferReceipt = new Transaction();
+        transferReceipt.setSourceAccount(sourceAccount);
+        transferReceipt.setDestinationAccount(targetAccount);
+        transferReceipt.setAmount(amount);
+        transferReceipt.setTransactionType(TransactionType.TRANSFER);
+        transactionRepository.save(transferReceipt);
     }
 
     @Transactional
@@ -106,7 +106,7 @@ public class AccountService {
 
 
     public List<Transaction> getAccountStatement(Long accountId) {
-        if(!accountRepository.existsById(accountId)) {
+        if (!accountRepository.existsById(accountId)) {
             throw new AccountNotFoundException("Account not found with ID: " + accountId);
         }
         // new thing learned
