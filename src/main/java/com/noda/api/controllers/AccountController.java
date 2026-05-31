@@ -39,13 +39,13 @@ public class AccountController {
 
  @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequestDTO dto) {
-     accountService.transfer(dto.getSourceId(), dto.getTargetId(), dto.getAmount());
+     accountService.transfer(dto.sourceId(), dto.targetId(), dto.amount());
         return ResponseEntity.ok("Transfer successful!");
     }
 
     @PostMapping("/withdrawal")
     public ResponseEntity<AccountResponseDTO> withdrawal (@Valid @RequestBody TransactionRequestDTO dto) {
-     Account account = accountService.withdrawal(dto.getAccountId(), dto.getAmount());
+     Account account = accountService.withdrawal(dto.accountId(), dto.amount());
         AccountResponseDTO response = new AccountResponseDTO(
                 account.getId(),
                 account.getAccountNumber(),
@@ -59,7 +59,7 @@ public class AccountController {
 
     @PostMapping("/deposit")
     public ResponseEntity<AccountResponseDTO> deposit(@Valid @RequestBody TransactionRequestDTO dto) {
-        Account account = accountService.deposit(dto.getAccountId(), dto.getAmount());
+        Account account = accountService.deposit(dto.accountId(), dto.amount());
         AccountResponseDTO response = new AccountResponseDTO(
                 account.getId(),
                 account.getAccountNumber(),

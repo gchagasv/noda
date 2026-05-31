@@ -3,6 +3,7 @@ package com.noda.api.services;
 import com.noda.api.dtos.AccountRequestDTO;
 import com.noda.api.exceptions.AccountNotFoundException;
 import com.noda.api.exceptions.SameAccountTransferException;
+import com.noda.api.exceptions.UserNotFoundException;
 import com.noda.api.models.Account;
 import com.noda.api.models.Transaction;
 import com.noda.api.models.User;
@@ -26,22 +27,18 @@ public class AccountService {
     private final TransactionRepository transactionRepository;
 
     public Account createAccount(AccountRequestDTO dto) {
-        User owner = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
+        User owner = userRepository.findById(dto.userId())
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + dto.userId()));
 
         Account newAccount = new Account();
         String generatedAccountNumber = java.util.UUID.randomUUID().toString().substring(0, 8);
 
         newAccount.setAccountNumber(generatedAccountNumber);
-        newAccount.setAccountType(dto.getAccountType());
+        newAccount.setAccountType(dto.accountType());
         newAccount.setBalance(BigDecimal.ZERO);
         newAccount.setUser(owner);
 
         return accountRepository.save(newAccount);
-    }
-
-    public List<Account> findAllAccounts() {
-        return accountRepository.findAll();
     }
 
     @Transactional
