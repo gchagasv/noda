@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFount(UserNotFoundException ex) {
+    public ResponseEntity<Object> handleUserNotFound(UserNotFoundException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
@@ -40,19 +40,22 @@ public class GlobalExceptionHandler {
         return buildResponse(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DuplicateAccountsException.class)
+    public ResponseEntity<Object> handleDuplicateAccounts(DuplicateAccountsException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+
     @ExceptionHandler(CepNotFoundException.class)
     public ResponseEntity<Object> handleCepNotFound(CepNotFoundException ex) {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>> handleDatabaseConstraints (DataIntegrityViolationException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "Database Conflict"); body.put("message",
-                "The operation violated a database constraint (e.g., duplicate key or null value).");
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST); }
+    public ResponseEntity<Object> handleDatabaseConstraints(DataIntegrityViolationException ex) {
+        return buildResponse("The operation violated a database constraint (e.g., duplicate key or null value).",
+                HttpStatus.BAD_REQUEST);
+    }
 
     private ResponseEntity<Object> buildResponse(String message, HttpStatus status) {
         Map<String, Object> body = new HashMap<>();

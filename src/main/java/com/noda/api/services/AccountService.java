@@ -2,6 +2,7 @@ package com.noda.api.services;
 
 import com.noda.api.dtos.AccountRequestDTO;
 import com.noda.api.exceptions.AccountNotFoundException;
+import com.noda.api.exceptions.DuplicateAccountsException;
 import com.noda.api.exceptions.SameAccountTransferException;
 import com.noda.api.exceptions.UserNotFoundException;
 import com.noda.api.models.Account;
@@ -30,6 +31,10 @@ public class AccountService {
         User owner = userRepository.findById(dto.userId())
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + dto.userId()));
 
+         if(accountRepository.existsByUserIdAndAccountType(dto.userId(), dto.accountType())) {
+             throw new DuplicateAccountsException("You cannot have two accounts of the same type.");
+         }
+
         Account newAccount = new Account();
         String generatedAccountNumber = java.util.UUID.randomUUID().toString().substring(0, 8);
 
@@ -56,9 +61,6 @@ public class AccountService {
         sourceAccount.withdraw(amount);
         targetAccount.deposit(amount);
 
-        accountRepository.save(sourceAccount);
-        accountRepository.save(targetAccount);
-
         Transaction transferReceipt = new Transaction();
         transferReceipt.setSourceAccount(sourceAccount);
         transferReceipt.setDestinationAccount(targetAccount);
@@ -73,7 +75,6 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found with ID: " + accountId));
 
         account.deposit(amount);
-        accountRepository.save(account);
 
         Transaction receipt = new Transaction();
         receipt.setAmount(amount);
@@ -92,7 +93,6 @@ public class AccountService {
                 .orElseThrow(() -> new AccountNotFoundException("Account not found with ID: " + id));
 
         account.withdraw(amount);
-        accountRepository.save(account);
 
         Transaction receipt = new Transaction();
         receipt.setAmount(amount);
