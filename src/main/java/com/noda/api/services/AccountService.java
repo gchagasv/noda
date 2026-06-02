@@ -104,7 +104,6 @@ public class AccountService {
         return account;
     }
 
-
     public List<Transaction> getAccountStatement(Long accountId) {
         if (!accountRepository.existsById(accountId)) {
             throw new AccountNotFoundException("Account not found with ID: " + accountId);
