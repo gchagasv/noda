@@ -103,6 +103,5 @@ public class AccountServiceTest {
 
             Mockito.verify(accountRepository, Mockito.never()).save(Mockito.any());
         }
-
     }
 }

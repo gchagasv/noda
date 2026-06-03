@@ -12,18 +12,20 @@ public class ViaCepService {
     private final RestClient restClient = RestClient.create("https://viacep.com.br/ws");
 
     public ViaCepResponseDTO fetchAddressByCep(String cep) {
+        ViaCepResponseDTO response;
+
         try {
-            ViaCepResponseDTO response = restClient.get()
+            response = restClient.get()
                     .uri("/{cep}/json/", cep)
                     .retrieve()
                     .body(ViaCepResponseDTO.class);
-
-            if (response == null || Boolean.TRUE.equals(response.erro())) {
-                throw new CepNotFoundException("CEP not found: " + cep);
-            }
-            return response;
         } catch (Exception e) {
             throw new RuntimeException("Failed to communicate with ViaCEP API", e);
         }
+
+        if (response == null || Boolean.TRUE.equals(response.erro())) {
+            throw new CepNotFoundException("CEP not found: " + cep);
+        }
+        return response;
     }
 }
