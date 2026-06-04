@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-public record TransactionRequestDTO(
+public record  TransactionRequestDTO(
         @NotNull(message = "Account ID cannot be missing")
         Long accountId,
 
