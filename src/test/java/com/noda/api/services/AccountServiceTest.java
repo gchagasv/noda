@@ -1,10 +1,13 @@
 package com.noda.api.services;
 
 import com.noda.api.dtos.AccountRequestDTO;
+import com.noda.api.dtos.TransactionResponseDTO;
 import com.noda.api.exceptions.*;
 import com.noda.api.models.Account;
+import com.noda.api.models.Transaction;
 import com.noda.api.models.User;
 import com.noda.api.models.enums.AccountType;
+import com.noda.api.models.enums.TransactionType;
 import com.noda.api.repositories.AccountRepository;
 import com.noda.api.repositories.TransactionRepository;
 import com.noda.api.repositories.UserRepository;
@@ -20,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -330,26 +334,43 @@ public class AccountServiceTest {
     class AccountStatementTests {
 
         @Test
-        @DisplayName("")
+        @DisplayName("Should throw AccountNotFoundException when account does not exist")
         void shouldThrowExceptionWhenAccountNotFound() {
             Account testAccount = new Account();
             testAccount.setId(666L);
 
-            Mockito.when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
+            Mockito.when(accountRepository.existsById(testAccount.getId())).thenReturn(false);
 
             Assertions.assertThrows(AccountNotFoundException.class, () -> {
                 accountService.getAccountStatement(testAccount.getId());
             });
         }
-
         @Test
-        @DisplayName("")
+        @DisplayName("Should return account statement when data is valid")
         void shouldReturnStatementSuccessfully() {
             Account testAccount = new Account();
             testAccount.setId(666L);
 
-            Mockito.when(accountRepository.existsById(testAccount.getId())).thenReturn(true);
+            Transaction mockTransaction = new Transaction();
+            mockTransaction.setId(1L);
+            mockTransaction.setAmount(BigDecimal.valueOf(100));
+            mockTransaction.setTimestamp(java.time.LocalDateTime.now());
+            mockTransaction.setTransactionType(TransactionType.DEPOSIT);
 
+            Mockito.when(accountRepository.existsById(testAccount.getId())).thenReturn(true);
+            Mockito.when(transactionRepository.findBySourceAccountIdOrDestinationAccountId(testAccount.getId(), testAccount.getId()))
+                            .thenReturn(List.of(mockTransaction));
+
+
+            List<TransactionResponseDTO> result = accountService.getAccountStatement(testAccount.getId());
+
+           Assertions.assertNotNull(result);
+           Assertions.assertEquals(1, result.size());
+
+            TransactionResponseDTO responseDto = result.getFirst();
+            Assertions.assertEquals(mockTransaction.getId(), responseDto.transactionId());
+            Assertions.assertEquals(mockTransaction.getAmount(), responseDto.amount());
+            Assertions.assertEquals("DEPOSIT", responseDto.transactionType());
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.noda.api.services;
 
 import com.noda.api.dtos.AccountRequestDTO;
+import com.noda.api.dtos.TransactionResponseDTO;
 import com.noda.api.exceptions.AccountNotFoundException;
 import com.noda.api.exceptions.DuplicateAccountsException;
 import com.noda.api.exceptions.SameAccountTransferException;
@@ -104,11 +105,23 @@ public class AccountService {
         return account;
     }
 
-    public List<Transaction> getAccountStatement(Long accountId) {
+    public List<TransactionResponseDTO> getAccountStatement(Long accountId) {
         if (!accountRepository.existsById(accountId)) {
             throw new AccountNotFoundException("Account not found with ID: " + accountId);
         }
-        // new thing learned
-        return transactionRepository.findBySourceAccountIdOrDestinationAccountId(accountId, accountId);
+        return transactionRepository
+                .findBySourceAccountIdOrDestinationAccountId(accountId, accountId)
+                .stream()
+                .map(tx -> new TransactionResponseDTO(
+                        tx.getId(),
+                        tx.getAmount(),
+                        tx.getTransactionType().name(),
+                        tx.getTimestamp(),
+                        tx.getSourceAccount() != null ? tx.getSourceAccount().getAccountNumber() : null,
+                        tx.getSourceAccount() != null ? tx.getSourceAccount().getUser().getName() : null,
+                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getAccountNumber() : null,
+                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getUser().getName() : null
+                ))
+                .toList();
     }
 }

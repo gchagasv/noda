@@ -69,20 +69,7 @@ public class AccountController {
 
     @GetMapping("/{accountId}/statement")
     public ResponseEntity<List<TransactionResponseDTO>> getAccountStatement (@PathVariable Long accountId) {
-    List<Transaction> transactions = accountService.getAccountStatement(accountId);
-
-        List<TransactionResponseDTO> response = transactions.stream()
-                .map(tx -> new TransactionResponseDTO(
-                        tx.getId(),
-                        tx.getAmount(),
-                        tx.getTransactionType().name(),
-                        tx.getTimestamp(),
-                        tx.getSourceAccount() != null ? tx.getSourceAccount().getAccountNumber() : null,
-                        tx.getSourceAccount() != null ? tx.getSourceAccount().getUser().getName() : null,
-                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getAccountNumber() : null,
-                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getUser().getName() : null
-                ))
-                .toList();
-        return ResponseEntity.ok(response);
+    List<TransactionResponseDTO> response = accountService.getAccountStatement(accountId);
+    return ResponseEntity.ok(response);
     }
 }
