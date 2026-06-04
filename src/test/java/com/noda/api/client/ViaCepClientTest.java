@@ -1,0 +1,54 @@
+package com.noda.api.client;
+
+import com.noda.api.dtos.ViaCepResponseDTO;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+@ExtendWith(MockitoExtension.class)
+public class ViaCepClientTest {
+
+    private ViaCepClient viaCepClient;
+    private MockRestServiceServer server;
+
+    @BeforeEach
+    void setUp() {
+        RestClient.Builder builder = RestClient.builder();
+        server = MockRestServiceServer.bindTo(builder).build();
+        viaCepClient = new ViaCepClient(builder);
+    }
+
+    @Test
+    @DisplayName("Should successfully parse ViaCep JSON response when CEP is valid")
+    void shouldReturnResponseWhenCepIsValid() {
+        String targetCep = "80220450";
+        String mockJsonResponse = """
+                {
+                    "cep": "80220450",
+                    "logradouro": "Av. Presidente Vargas",
+                    "bairro": "Centro",
+                    "localidade": "Esteio",
+                    "uf": "RS"
+                }
+                """;
+
+        server.expect(requestTo("https://viacep.com.br/ws/" + targetCep + "/json/"))
+                .andRespond(withSuccess(mockJsonResponse, MediaType.APPLICATION_JSON));
+
+        ViaCepResponseDTO result = viaCepClient.getAddressByCep(targetCep);
+
+        assertNotNull(result);
+        assertEquals("Av. Presidente Vargas", result.logradouro());
+        assertEquals("Esteio", result.localidade());
+        assertEquals("RS", result.uf());
+    }
+}

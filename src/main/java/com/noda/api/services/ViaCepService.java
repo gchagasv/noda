@@ -1,24 +1,24 @@
 package com.noda.api.services;
 
-
+import com.noda.api.client.ViaCepClient;
 import com.noda.api.dtos.ViaCepResponseDTO;
 import com.noda.api.exceptions.CepNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 @Service
 public class ViaCepService {
 
-    private final RestClient restClient = RestClient.create("https://viacep.com.br/ws");
+    private final ViaCepClient viaCepClient;
+
+    public ViaCepService(ViaCepClient viaCepClient) {
+        this.viaCepClient = viaCepClient;
+    }
 
     public ViaCepResponseDTO fetchAddressByCep(String cep) {
         ViaCepResponseDTO response;
 
         try {
-            response = restClient.get()
-                    .uri("/{cep}/json/", cep)
-                    .retrieve()
-                    .body(ViaCepResponseDTO.class);
+            response = viaCepClient.getAddressByCep(cep);
         } catch (Exception e) {
             throw new RuntimeException("Failed to communicate with ViaCEP API", e);
         }
@@ -26,6 +26,7 @@ public class ViaCepService {
         if (response == null || Boolean.TRUE.equals(response.erro())) {
             throw new CepNotFoundException("CEP not found: " + cep);
         }
+
         return response;
     }
 }

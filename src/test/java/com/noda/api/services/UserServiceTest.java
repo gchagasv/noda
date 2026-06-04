@@ -41,19 +41,19 @@ public class UserServiceTest {
         @DisplayName("Should successfully create an user when data is valid")
         void shouldCreateUserSuccessfully () {
 
-        String mockUserCep = "99888777";
-        String mockUserNumber = "26";
-        AddressRequestDTO addressDTO = new AddressRequestDTO(mockUserCep, mockUserNumber, null);
+            String mockUserCep = "99888777";
+            String mockUserNumber = "26";
+            AddressRequestDTO addressDTO = new AddressRequestDTO(mockUserCep, mockUserNumber, null);
 
-        UserRequestDTO dto = new UserRequestDTO("eren", "11122233344", "test@gmail.com",
-                "senha123", LocalDate.of(2006, 6, 3), addressDTO);
+            UserRequestDTO dto = new UserRequestDTO("eren", "11122233344", "test@gmail.com",
+                    "senha123", LocalDate.of(2006, 6, 3), addressDTO);
 
-        User mockUser = new User();
-        mockUser.setName("eren");
-        mockUser.setCpf("11122233344");
-        mockUser.setEmail("test@gmail.com");
+            User mockUser = new User();
+            mockUser.setName("eren");
+            mockUser.setCpf("11122233344");
+            mockUser.setEmail("test@gmail.com");
 
-        ViaCepResponseDTO viaCepResponse = new ViaCepResponseDTO(
+            ViaCepResponseDTO viaCepResponse = new ViaCepResponseDTO(
                     "Av. Presidente Vargas",
                     "Centro",
                     "Esteio",
