@@ -2,6 +2,8 @@ package com.noda.api.client;
 
 import com.noda.api.dtos.ViaCepResponseDTO;
 
+import com.noda.api.exceptions.CepNotFoundException;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -18,6 +20,9 @@ public class ViaCepClient {
         return restClient.get()
                 .uri("/{cep}/json/", cep)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new CepNotFoundException("CEP not found: " + cep);
+                })
                 .body(ViaCepResponseDTO.class);
     }
 }

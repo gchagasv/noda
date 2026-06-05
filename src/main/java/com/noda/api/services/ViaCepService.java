@@ -15,13 +15,7 @@ public class ViaCepService {
     }
 
     public ViaCepResponseDTO fetchAddressByCep(String cep) {
-        ViaCepResponseDTO response;
-
-        try {
-            response = viaCepClient.getAddressByCep(cep);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to communicate with ViaCEP API", e);
-        }
+        ViaCepResponseDTO response = viaCepClient.getAddressByCep(cep);
 
         if (response == null || Boolean.TRUE.equals(response.erro())) {
             throw new CepNotFoundException("CEP not found: " + cep);
