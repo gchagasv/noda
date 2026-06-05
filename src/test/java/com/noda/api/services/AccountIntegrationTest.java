@@ -6,6 +6,7 @@ import com.noda.api.exceptions.AccountNotFoundException;
 import com.noda.api.exceptions.DuplicateAccountsException;
 import com.noda.api.models.Account;
 import com.noda.api.models.Address;
+import com.noda.api.models.Transaction;
 import com.noda.api.models.User;
 import com.noda.api.models.enums.AccountType;
 import com.noda.api.repositories.AccountRepository;
@@ -113,14 +114,14 @@ public class AccountIntegrationTest {
 
             accountService.deposit(testAccount.getId(), BigDecimal.TEN);
 
-            List<TransactionResponseDTO> testStatement = accountService.getAccountStatement(testAccount.getId());
+            List<Transaction> testStatement = accountService.getAccountStatement(testAccount.getId());
 
             Assertions.assertNotNull(testStatement);
             Assertions.assertEquals(1, testStatement.size());
 
-            TransactionResponseDTO responseDto =  testStatement.getFirst();
+            Transaction responseDto =  testStatement.getFirst();
 
-            Assertions.assertEquals("DEPOSIT", responseDto.transactionType());
+            Assertions.assertEquals("DEPOSIT", responseDto.getTransactionType().toString());
 
 
         }

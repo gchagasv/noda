@@ -362,15 +362,15 @@ public class AccountServiceTest {
                             .thenReturn(List.of(mockTransaction));
 
 
-            List<TransactionResponseDTO> result = accountService.getAccountStatement(testAccount.getId());
+            List<Transaction> result = accountService.getAccountStatement(testAccount.getId());
 
            Assertions.assertNotNull(result);
            Assertions.assertEquals(1, result.size());
 
-            TransactionResponseDTO responseDto = result.getFirst();
-            Assertions.assertEquals(mockTransaction.getId(), responseDto.transactionId());
-            Assertions.assertEquals(mockTransaction.getAmount(), responseDto.amount());
-            Assertions.assertEquals("DEPOSIT", responseDto.transactionType());
+            Transaction responseDto = result.getFirst();
+            Assertions.assertEquals(mockTransaction.getId(), responseDto.getId());
+            Assertions.assertEquals(mockTransaction.getAmount(), responseDto.getAmount());
+            Assertions.assertEquals("DEPOSIT", responseDto.getTransactionType().toString());
         }
     }
 }

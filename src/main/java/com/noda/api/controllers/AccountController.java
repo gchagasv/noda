@@ -22,54 +22,36 @@ public class AccountController {
     @PostMapping
     public ResponseEntity<AccountResponseDTO> createAccount(@Valid @RequestBody AccountRequestDTO dto) {
         Account account = accountService.createAccount(dto);
-
-        AccountResponseDTO response = new AccountResponseDTO(
-                account.getId(),
-                account.getAccountNumber(),
-                account.getAccountType(),
-                account.getBalance(),
-                account.getUser().getName()
-        );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AccountResponseDTO(account));
     }
 
- @PostMapping("/transfer")
+    @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequestDTO dto) {
-     accountService.transfer(dto.sourceId(), dto.targetId(), dto.amount());
+        accountService.transfer(dto.sourceId(), dto.targetId(), dto.amount());
         return ResponseEntity.ok("Transfer successful!");
     }
 
     @PostMapping("/withdrawal")
-    public ResponseEntity<AccountResponseDTO> withdrawal (@Valid @RequestBody TransactionRequestDTO dto) {
-     Account account = accountService.withdrawal(dto.accountId(), dto.amount());
-        AccountResponseDTO response = new AccountResponseDTO(
-                account.getId(),
-                account.getAccountNumber(),
-                account.getAccountType(),
-                account.getBalance(),
-                account.getUser().getName()
-        );
+    public ResponseEntity<AccountResponseDTO> withdrawal(@Valid @RequestBody TransactionRequestDTO dto) {
+        Account account = accountService.withdrawal(dto.accountId(), dto.amount());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new AccountResponseDTO(account));
     }
 
     @PostMapping("/deposit")
     public ResponseEntity<AccountResponseDTO> deposit(@Valid @RequestBody TransactionRequestDTO dto) {
         Account account = accountService.deposit(dto.accountId(), dto.amount());
-        AccountResponseDTO response = new AccountResponseDTO(
-                account.getId(),
-                account.getAccountNumber(),
-                account.getAccountType(),
-                account.getBalance(),
-                account.getUser().getName()
-        );
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new AccountResponseDTO(account));
     }
 
-    @GetMapping("/{accountId}/statement")
-    public ResponseEntity<List<TransactionResponseDTO>> getAccountStatement (@PathVariable Long accountId) {
-    List<TransactionResponseDTO> response = accountService.getAccountStatement(accountId);
-    return ResponseEntity.ok(response);
+    @GetMapping("/{id}/statement")
+    public ResponseEntity<List<TransactionResponseDTO>> getStatement(@PathVariable Long id) {
+        List<Transaction> transactions = accountService.getAccountStatement(id);
+
+        List<TransactionResponseDTO> response = transactions.stream()
+                .map(TransactionResponseDTO::new)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 }

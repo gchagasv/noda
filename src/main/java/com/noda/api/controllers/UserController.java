@@ -19,17 +19,14 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO dto) {
-        UserResponseDTO response = userService.save(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        User user = userService.save(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDTO(user));
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
-        UserResponseDTO response = userService.findUserByIdMapped(id);
-        return ResponseEntity.ok(response);
+        User user = userService.findUserById(id);
+        return ResponseEntity.ok(new UserResponseDTO(user));
     }
 }
-
-
 

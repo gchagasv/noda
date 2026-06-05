@@ -105,23 +105,11 @@ public class AccountService {
         return account;
     }
 
-    public List<TransactionResponseDTO> getAccountStatement(Long accountId) {
+    public List<Transaction> getAccountStatement(Long accountId) {
         if (!accountRepository.existsById(accountId)) {
             throw new AccountNotFoundException("Account not found with ID: " + accountId);
         }
-        return transactionRepository
-                .findBySourceAccountIdOrDestinationAccountId(accountId, accountId)
-                .stream()
-                .map(tx -> new TransactionResponseDTO(
-                        tx.getId(),
-                        tx.getAmount(),
-                        tx.getTransactionType().name(),
-                        tx.getTimestamp(),
-                        tx.getSourceAccount() != null ? tx.getSourceAccount().getAccountNumber() : null,
-                        tx.getSourceAccount() != null ? tx.getSourceAccount().getUser().getName() : null,
-                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getAccountNumber() : null,
-                        tx.getDestinationAccount() != null ? tx.getDestinationAccount().getUser().getName() : null
-                ))
-                .toList();
+        return transactionRepository.findBySourceAccountIdOrDestinationAccountId(accountId, accountId);
+
     }
 }
