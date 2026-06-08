@@ -66,11 +66,10 @@ public class UserServiceTest {
             Mockito.when(viaCepService.fetchAddressByCep(dto.address().cep())).thenReturn(viaCepResponse);
             Mockito.when(userRepository.save(Mockito.any())).thenReturn(mockUser);
 
-            UserResponseDTO result = userService.save(dto);
-
-            Assertions.assertNotNull(result.cpf());
-            Assertions.assertEquals("eren", result.name());
-            Assertions.assertEquals("test@gmail.com", result.email());
+            User result = userService.save(dto);
+            Assertions.assertNotNull(result.getCpf());
+            Assertions.assertEquals("eren", result.getName());
+            Assertions.assertEquals("test@gmail.com", result.getEmail());
 
         }
 

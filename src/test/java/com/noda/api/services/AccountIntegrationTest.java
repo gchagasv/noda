@@ -39,6 +39,8 @@ public class AccountIntegrationTest {
     @Autowired
     private AccountRepository accountRepository;
 
+    private int userCounter = 0;
+
     @Nested
     @Transactional
     @DisplayName("Integration Create Account Tests")
@@ -127,6 +129,8 @@ public class AccountIntegrationTest {
         }
     }
     private User createAndSaveTestUser() {
+        userCounter++;
+
         Address address = new Address();
         address.setCep("93290440");
         address.setNumber("500");
@@ -137,12 +141,12 @@ public class AccountIntegrationTest {
         address.setStreet("Av. Presidente Vargas");
 
         User testUser = new User();
-        // Generate a unique 11-digit random CPF to avoid database duplicate key errors
+        // generate a unique 11-digit random CPF to avoid database duplicate key errors
         long random1 = ThreadLocalRandom.current().nextLong(100000, 999999);
         long random2 = ThreadLocalRandom.current().nextLong(10000, 99999);
         String uniqueCpf = String.valueOf(random1) + String.valueOf(random2);
 
-        // Use the current timestamp in milliseconds to ensure a unique email per test execution
+        // use the current timestamp in milliseconds to ensure a unique email per test execution
         long timestamp = System.currentTimeMillis();
         testUser.setName("Test User");
         testUser.setCpf(uniqueCpf);
