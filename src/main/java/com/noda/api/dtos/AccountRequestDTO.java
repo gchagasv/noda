@@ -10,5 +10,4 @@ public record AccountRequestDTO(
 
         @NotNull(message = "User id cannot be null.")
         Long userId
-) {
-}
+) {}

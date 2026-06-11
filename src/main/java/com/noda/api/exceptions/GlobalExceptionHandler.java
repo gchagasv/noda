@@ -51,6 +51,11 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<Object> handleIncorrectPassword(IncorrectPasswordException ex) {
+        return  buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDatabaseConstraints(DataIntegrityViolationException ex) {
         return buildResponse("The operation violated a database constraint (e.g., duplicate key or null value).",
