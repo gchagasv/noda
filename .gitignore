@@ -1,9 +1,28 @@
-# Maven build directory
+# Maven
 target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# IDE files (IntelliJ)
+# IntelliJ IDEA
 .idea/
 *.iml
+*.iws
+*.ids
+.idea_modules/
 
-# Help files
-.help/
+src/main/resources/application-local.properties
+
+# secret
+**/application-local.properties
+**/application-local.yml
+**/*.env
+.env
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
