@@ -6,6 +6,7 @@ import com.noda.api.dtos.LoginRequestDTO;
 import com.noda.api.dtos.ResendCodeRequestDTO;
 import com.noda.api.dtos.VerifyRequestDTO;
 import com.noda.api.services.AuthenticationService;
+import com.noda.api.services.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final AuthenticationService authService;
+    private final JwtService jwtService;
 
-    public AuthenticationController(AuthenticationService authService) {
+    public AuthenticationController(AuthenticationService authService, JwtService jwtService) {
         this.authService = authService;
+        this.jwtService = jwtService;
     }
 
    @PostMapping("/login")
@@ -34,7 +37,8 @@ public class AuthenticationController {
         boolean isValid = authService.validateOtp(verifyRequest.email(), verifyRequest.code());
 
         if(isValid) {
-            return ResponseEntity.ok(new AuthenticationResponseDTO("Authentication Successful!."));
+            String token = jwtService.generateToken(verifyRequest.email());
+            return ResponseEntity.ok(new AuthenticationResponseDTO("Authentication Successful!.", token));
         }
         else return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new AuthenticationResponseDTO("Authentication Failed: Invalid or Expired Code"));
