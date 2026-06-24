@@ -11,6 +11,7 @@ import com.noda.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ViaCepService viaCepService;
-
+    private final PasswordEncoder passwordEncoder;
 
     public User save(UserRequestDTO dto) {
         validateUniqueFields(dto);
@@ -51,7 +52,7 @@ public class UserService {
         user.setCpf(dto.cpf());
         user.setEmail(dto.email());
         user.setBirthday(dto.birthday());
-        user.setPassword(dto.password());
+        user.setPassword(passwordEncoder.encode(dto.password()));
 
         if (dto.address() != null && dto.address().cep() != null) {
             String targetCep = dto.address().cep();

@@ -7,8 +7,8 @@ import com.noda.api.repositories.OneTimePasswordRepository;
 import com.noda.api.repositories.UserRepository;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
@@ -20,17 +20,19 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final SecureRandom random = new SecureRandom();
     private final JavaMailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationService(OneTimePasswordRepository otpRepository, UserRepository userRepository, JavaMailSender mailSender) {
+    public AuthenticationService(OneTimePasswordRepository otpRepository, UserRepository userRepository, JavaMailSender mailSender, PasswordEncoder passwordEncoder) {
         this.otpRepository = otpRepository;
         this.userRepository = userRepository;
         this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String authenticateUserAndGenerateOtp(String email, String password) {
         return userRepository.findByEmail(email)
                 .map(storedUser -> {
-                    if (!storedUser.getPassword().equals(password)) {
+                    if (!passwordEncoder.matches(password, storedUser.getPassword())) {
                         throw new IncorrectPasswordException("Authentication failed: Incorrect password");
                     }
                     return generateAndSaveOtp(email);
@@ -42,7 +44,7 @@ public class AuthenticationService {
     public String generateAndSaveOtp(String email) {
         int number = random.nextInt(900000) + 100000; // maximum 999.999
         String code = String.valueOf(number);
-
+        
         LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
         // immutable
         OneTimePassword otp = OneTimePassword.builder()
